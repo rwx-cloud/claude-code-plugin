@@ -1,0 +1,13 @@
+{
+  "name": "rwx",
+  "description": "RWX CI/CD platform integration — migrate workflows, validate configs, debug test failures",
+  "version": "0.1.0",
+  "author": {
+    "name": "RWX",
+    "url": "https://www.rwx.com"
+  },
+  "homepage": "https://www.rwx.com/docs/rwx",
+  "repository": "https://github.com/rwx-cloud/claude-code-plugin",
+  "license": "MIT",
+  "keywords": ["ci-cd", "migration", "github-actions", "rwx"]
+}
