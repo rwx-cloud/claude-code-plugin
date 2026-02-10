@@ -100,6 +100,32 @@ Provide a summary to the user:
 - Secrets that need to be configured in RWX Cloud
 - Estimated parallelism improvement (e.g., "6 sequential steps → 3-level DAG")
 
-Then suggest the user run `/rwx:review-gha-migration` to get an independent review of the
-generated config. This runs a separate reviewer that re-reads both files from scratch and
-checks for semantic gaps, missing steps, and optimization opportunities.
+### Step 9: Automated review
+
+Spawn an independent reviewer using the Task tool to verify the migration. This subagent has
+no context from the migration — it only sees the files on disk, giving it fresh eyes to catch
+mistakes.
+
+Use the Task tool with `subagent_type: "general-purpose"` and a prompt structured like this:
+
+```
+You are reviewing an RWX config that was migrated from a GitHub Actions workflow.
+Your job is to catch problems the implementer missed. Approach this as a skeptical
+reviewer, not as someone defending prior work.
+
+Read the review procedure at skills/review-gha-migration/SKILL.md and follow it exactly.
+The file contains `!`curl ...`` lines — these are documentation URLs. Fetch each one using
+curl via the Bash tool to get the reference documentation you need.
+
+The files to review:
+- Source GHA workflow: <path to the source workflow from step 1>
+- Generated RWX config: <path to the generated .rwx/*.yml from step 6>
+```
+
+Replace the file paths with the actual paths used in this migration.
+
+Wait for the subagent to complete, then relay its review to the user. If the review found
+blocking issues, offer to fix them.
+
+After relaying the review, let the user know they can re-run the review independently at any
+time with `/rwx:review-gha-migration`.
