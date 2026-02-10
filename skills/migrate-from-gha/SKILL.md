@@ -5,13 +5,9 @@ argument-hint: [path/to/.github/workflows/ci.yml]
 allowed-tools: Bash(curl *)
 ---
 
-## RWX Reference
+## Quick Reference
 
-!`curl -sL https://www.rwx.com/docs/rwx/migrating/rwx-reference.md`
-
-## GHA-to-RWX Mapping Reference
-
-!`curl -sL https://www.rwx.com/docs/rwx/migrating/gha-reference.md`
+!`curl -sL https://www.rwx.com/docs/rwx/migrating/cheat-sheet.md`
 
 ## Migration Procedure
 
@@ -53,10 +49,13 @@ MCP tools specific to this migration are not yet available, so for now you can s
 
 ### Step 5: Apply RWX optimization rules
 
+Fetch the full reference documentation now:
+- RWX reference: `curl -sL https://www.rwx.com/docs/rwx/migrating/rwx-reference.md`
+- GHA-to-RWX mapping: `curl -sL https://www.rwx.com/docs/rwx/migrating/gha-reference.md`
+
 This is the core of the migration. Do NOT produce a 1:1 mapping. Apply the optimization
-rules from the RWX Reference and GHA-to-RWX Mapping Reference above — including DAG
-decomposition, content-based caching, package substitution, trigger mapping, secret mapping,
-and environment variable translation.
+rules from the reference documentation — including DAG decomposition, content-based caching,
+package substitution, trigger mapping, secret mapping, and environment variable translation.
 
 ### Step 6: Write the output
 
@@ -114,8 +113,7 @@ Your job is to catch problems the implementer missed. Approach this as a skeptic
 reviewer, not as someone defending prior work.
 
 Read the review procedure at skills/review-gha-migration/SKILL.md and follow it exactly.
-The file contains `!`curl ...`` lines — these are documentation URLs. Fetch each one using
-curl via the Bash tool to get the reference documentation you need.
+When a step tells you to fetch reference documentation via curl, do so using the Bash tool.
 
 The files to review:
 - Source GHA workflow: <path to the source workflow from step 1>

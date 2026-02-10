@@ -5,13 +5,9 @@ argument-hint: [.rwx/ci.yml]
 allowed-tools: Bash(curl *)
 ---
 
-## RWX Reference
+## Quick Reference
 
-!`curl -sL https://www.rwx.com/docs/rwx/migrating/rwx-reference.md`
-
-## GHA-to-RWX Mapping Reference
-
-!`curl -sL https://www.rwx.com/docs/rwx/migrating/gha-reference.md`
+!`curl -sL https://www.rwx.com/docs/rwx/migrating/cheat-sheet.md`
 
 ## Review Procedure
 
@@ -71,7 +67,11 @@ Pay special attention to:
 
 ### Step 4: Verify RWX optimizations
 
-Using the reference documentation above, check whether the config takes full advantage of
+Fetch the full reference documentation now:
+- RWX reference: `curl -sL https://www.rwx.com/docs/rwx/migrating/rwx-reference.md`
+- GHA-to-RWX mapping: `curl -sL https://www.rwx.com/docs/rwx/migrating/gha-reference.md`
+
+Using the reference documentation, check whether the config takes full advantage of
 RWX capabilities:
 
 - **DAG structure**: Are tasks that can run in parallel actually parallel, or are there
