@@ -99,3 +99,7 @@ Provide a summary to the user:
 - Any `# TODO:` items that need manual attention
 - Secrets that need to be configured in RWX Cloud
 - Estimated parallelism improvement (e.g., "6 sequential steps → 3-level DAG")
+
+Then suggest the user run `/rwx:review-migration` to get an independent review of the
+generated config. This runs a separate reviewer that re-reads both files from scratch and
+checks for semantic gaps, missing steps, and optimization opportunities.
