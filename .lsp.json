@@ -1,0 +1,9 @@
+{
+  "rwx": {
+    "command": "rwx",
+    "args": ["lsp", "serve"],
+    "extensionToLanguage": {
+      ".yml": "yaml"
+    }
+  }
+}
