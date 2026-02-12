@@ -89,7 +89,7 @@ Check the RWX config for structural issues:
 - YAML is well-formed
 - Task ordering reflects the DAG (independent tasks first)
 - No orphaned `depends_on` references
-- Review any LSP diagnostics (errors and warnings) that appear
+- Check for LSP diagnostics in Write/Edit tool results (do not use IDE or MCP tools to fetch them)
 
 ### Step 6: Produce the review
 
