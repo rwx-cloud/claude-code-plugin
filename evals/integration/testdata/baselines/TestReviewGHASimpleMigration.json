@@ -1,0 +1,14 @@
+{
+  "input_tokens": 34,
+  "output_tokens": 2439,
+  "execution_time_ms": 50701,
+  "tools_used": [
+    "Skill",
+    "Read",
+    "Glob",
+    "Bash"
+  ],
+  "skills_used": [
+    "rwx:review-gha-migration"
+  ]
+}

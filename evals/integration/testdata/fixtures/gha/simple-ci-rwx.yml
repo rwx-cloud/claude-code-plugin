@@ -1,0 +1,34 @@
+on:
+  github:
+    push:
+      branches: [main]
+      init:
+        commit-sha: ${{ event.git.sha }}
+    pull_request:
+      init:
+        commit-sha: ${{ event.git.sha }}
+
+base:
+  image: ubuntu:24.04
+  config: rwx/base 1.0.0
+
+tasks:
+  - key: code
+    call: git/clone 2.0.2
+    with:
+      repository: ${{ github.repository_url }}
+      ref: ${{ init.commit-sha }}
+      github-token: ${{ github.token }}
+
+  - key: go
+    call: golang/install 1.2.0
+    with:
+      go-version: "1.23"
+
+  - key: mod-download
+    call: golang/mod-download 1.0.0
+    use: [code, go]
+
+  - key: test
+    use: [code, go, mod-download]
+    run: go test ./...

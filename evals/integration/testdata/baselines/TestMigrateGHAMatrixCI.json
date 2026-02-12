@@ -1,0 +1,18 @@
+{
+  "input_tokens": 143,
+  "output_tokens": 7910,
+  "execution_time_ms": 184823,
+  "tools_used": [
+    "Read",
+    "Skill",
+    "WebFetch",
+    "Glob",
+    "Bash",
+    "Write",
+    "Edit",
+    "Task"
+  ],
+  "skills_used": [
+    "rwx:migrate-from-gha"
+  ]
+}
