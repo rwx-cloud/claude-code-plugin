@@ -7,7 +7,7 @@
     "url": "https://www.rwx.com"
   },
   "homepage": "https://www.rwx.com/docs/rwx",
-  "repository": "https://github.com/rwx-cloud/claude-code-plugin",
+  "repository": "https://github.com/rwx-cloud/skills",
   "license": "MIT",
   "keywords": ["ci-cd", "migration", "github-actions", "rwx"]
 }

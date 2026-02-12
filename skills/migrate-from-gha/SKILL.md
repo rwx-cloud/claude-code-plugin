@@ -2,12 +2,11 @@
 name: migrate-from-gha
 description: Migrate a GitHub Actions workflow to RWX. Translates triggers, jobs, steps into an optimized RWX config with DAG parallelism, content-based caching, and RWX packages.
 argument-hint: [path/to/.github/workflows/ci.yml]
-allowed-tools: Bash(curl *)
 ---
 
 ## Quick Reference
 
-!`curl -sL https://www.rwx.com/docs/rwx/migrating/cheat-sheet.md`
+Read the cheat sheet before starting: [GHA Cheat Sheet](references/gha-cheat-sheet.md)
 
 ## Migration Procedure
 
@@ -56,9 +55,10 @@ MCP tools specific to this migration are not yet available, so for now you can s
 
 ### Step 5: Apply RWX optimization rules
 
-Fetch the full reference documentation now:
-- RWX reference: `curl -sL https://www.rwx.com/docs/rwx/migrating/rwx-reference.md`
-- GHA-to-RWX mapping: `curl -sL https://www.rwx.com/docs/rwx/migrating/gha-reference.md`
+Fetch the full reference documentation now. Read these reference files and then fetch their
+contents:
+- [RWX Reference](references/rwx-reference.md)
+- [GHA-to-RWX Mapping](references/gha-reference.md)
 
 This is the core of the migration. Do NOT produce a 1:1 mapping. Apply the optimization
 rules from the reference documentation — including DAG decomposition, content-based caching,
@@ -82,10 +82,9 @@ Structure the file in this order:
 
 ### Step 7: Validate
 
-After writing the file, check the tool result for LSP diagnostics (errors and warnings). This
-plugin bundles an LSP server (`rwx lsp serve`) that automatically validates RWX config files —
-diagnostics appear inline in the Write/Edit tool result. Do not use IDE or MCP tools to fetch
-diagnostics; they are already included in the tool output.
+After writing the file, validate the generated config:
+
+    rwx lint .rwx/<name>.yml
 
 If there are diagnostics:
 
@@ -93,30 +92,29 @@ If there are diagnostics:
 - Fix the issues in the generated config
 - Re-check diagnostics after each fix until the file is clean
 
-Common issues the LSP will catch:
+Common issues the validator will catch:
 
 - Invalid YAML structure
 - Unknown task keys or properties
-- Outdated package versions (the LSP will suggest updates)
+- Outdated package versions (the validator will suggest updates)
 - Missing required fields
 
 You can also initiate test runs locally without pushing the code. See `rwx run --help` for documentation.
 
 ### Step 8: Automated review
 
-Tell the user: "Launching a sub-agent with fresh context to review the migration. This
-reviewer has no knowledge of the decisions made during migration — it will read both files
-from scratch and check for gaps."
+Tell the user: "Launching a review of the migration. This reviewer has no knowledge of the
+decisions made during migration — it will read both files from scratch and check for gaps."
 
-Before spawning the subagent, fetch the reference docs and read the review procedure so you
-can include them in the prompt:
-- Curl the RWX reference and GHA-to-RWX mapping (same URLs from step 5)
-- Read `skills/review-gha-migration/SKILL.md`
+First, read the reference docs and the review procedure so you can include them:
+- Fetch the contents from the URLs in [RWX Reference](references/rwx-reference.md) and [GHA-to-RWX Mapping](references/gha-reference.md)
+- Read the review procedure at [review-gha-migration/SKILL.md](../review-gha-migration/SKILL.md)
 
-Then spawn the reviewer using the Task tool with `subagent_type: "general-purpose"` and a
-prompt that includes:
+**If you have the ability to spawn a subagent** (e.g., Claude Code's Task tool), do so for an
+independent review with fresh context. Spawn the reviewer using a general-purpose subagent with
+a prompt that includes:
 1. The full contents of the review procedure (from the SKILL.md you just read)
-2. The full contents of both reference docs (from the curls you just ran)
+2. The full contents of both reference docs (from the fetches you just ran)
 3. The file paths to review
 
 Structure the prompt like this:
@@ -142,7 +140,10 @@ reviewer, not as someone defending prior work.
 
 Replace the placeholders with the actual content and paths.
 
-Wait for the subagent to complete. If the review found blocking issues, fix them before
+**Otherwise**, perform the review inline by reading and following the review procedure from
+[review-gha-migration/SKILL.md](../review-gha-migration/SKILL.md).
+
+Wait for the review to complete. If the review found blocking issues, fix them before
 continuing.
 
 ### Step 9: Summarize

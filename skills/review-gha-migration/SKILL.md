@@ -2,12 +2,11 @@
 name: review-gha-migration
 description: Review an RWX config generated from a GitHub Actions migration. Compares the source workflow against the generated config to catch semantic gaps, missing steps, and optimization opportunities.
 argument-hint: [.rwx/ci.yml]
-allowed-tools: Bash(curl *)
 ---
 
 ## Quick Reference
 
-!`curl -sL https://www.rwx.com/docs/rwx/migrating/cheat-sheet.md`
+Read the cheat sheet before starting: [GHA Cheat Sheet](references/gha-cheat-sheet.md)
 
 ## Review Procedure
 
@@ -67,9 +66,10 @@ Pay special attention to:
 
 ### Step 4: Verify RWX optimizations
 
-Fetch the full reference documentation now:
-- RWX reference: `curl -sL https://www.rwx.com/docs/rwx/migrating/rwx-reference.md`
-- GHA-to-RWX mapping: `curl -sL https://www.rwx.com/docs/rwx/migrating/gha-reference.md`
+Fetch the full reference documentation now. Read these reference files and then fetch their
+contents:
+- [RWX Reference](references/rwx-reference.md)
+- [GHA-to-RWX Mapping](references/gha-reference.md)
 
 Using the reference documentation, check whether the config takes full advantage of
 RWX capabilities:
@@ -89,7 +89,7 @@ Check the RWX config for structural issues:
 - YAML is well-formed
 - Task ordering reflects the DAG (independent tasks first)
 - No orphaned `depends_on` references
-- Check for LSP diagnostics in Write/Edit tool results (do not use IDE or MCP tools to fetch them)
+- Run `rwx lint .rwx/<name>.yml` and review the diagnostics
 
 ### Step 6: Produce the review
 

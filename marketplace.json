@@ -1,0 +1,18 @@
+{
+  "name": "rwx",
+  "description": "RWX CI/CD platform integration",
+  "version": "0.1.0",
+  "repository": "https://github.com/rwx-cloud/skills",
+  "skills": [
+    {
+      "name": "migrate-from-gha",
+      "path": "skills/migrate-from-gha",
+      "description": "Migrate a GitHub Actions workflow to RWX"
+    },
+    {
+      "name": "review-gha-migration",
+      "path": "skills/review-gha-migration",
+      "description": "Review an RWX config from a GitHub Actions migration"
+    }
+  ]
+}
