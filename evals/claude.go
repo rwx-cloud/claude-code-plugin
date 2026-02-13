@@ -16,11 +16,12 @@ var update = flag.Bool("update", false, "update baseline snapshots")
 
 // ClaudeEvent is a top-level event from Claude's --output-format json output.
 type ClaudeEvent struct {
-	Type       string           `json:"type"`
-	Message    ClaudeMessage    `json:"message"`
-	DurationMS float64          `json:"duration_ms"`
-	Usage      *TokenUsage      `json:"usage,omitempty"`
-	ModelUsage *ModelTokenUsage `json:"model_usage,omitempty"`
+	Type         string           `json:"type"`
+	Message      ClaudeMessage    `json:"message"`
+	DurationMS   float64          `json:"duration_ms"`
+	TotalCostUSD float64          `json:"total_cost_usd,omitempty"`
+	Usage        *TokenUsage      `json:"usage,omitempty"`
+	ModelUsage   *ModelTokenUsage `json:"model_usage,omitempty"`
 }
 
 // ClaudeMessage contains a role and array of content items (lazily parsed).

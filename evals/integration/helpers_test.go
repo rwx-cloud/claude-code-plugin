@@ -2,6 +2,7 @@ package integration
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -132,6 +133,50 @@ func saveClaudeOutput(t *testing.T, result *evals.ExecutionResult) {
 	path := filepath.Join(dir, "claude-output-"+t.Name()+".json")
 	if err := os.WriteFile(path, result.RawOutput, 0o644); err != nil {
 		t.Logf("WARNING: could not save Claude output to %s: %v", path, err)
+	}
+
+	writeRWXInfo(t, result)
+}
+
+// writeRWXInfo writes Claude usage stats to $RWX_INFO so they appear in the RWX UI.
+// Each metric is written to a separate file so newlines don't interfere with rendering.
+func writeRWXInfo(t *testing.T, result *evals.ExecutionResult) {
+	t.Helper()
+
+	infoDir := os.Getenv("RWX_INFO")
+	if infoDir == "" {
+		return
+	}
+
+	evt := result.ResultEvent()
+	if evt == nil {
+		t.Log("WARNING: no result event found, skipping RWX_INFO")
+		return
+	}
+
+	var usage evals.TokenUsage
+	if evt.Usage != nil {
+		usage = *evt.Usage
+	}
+
+	prefix := t.Name() + "-"
+	entries := []struct {
+		key   string
+		value string
+	}{
+		{"total_cost_usd", fmt.Sprintf("$%.4f", evt.TotalCostUSD)},
+		{"input_tokens", fmt.Sprintf("%d", usage.InputTokens)},
+		{"cache_creation_input_tokens", fmt.Sprintf("%d", usage.CacheCreationInputTokens)},
+		{"cache_read_input_tokens", fmt.Sprintf("%d", usage.CacheReadInputTokens)},
+		{"output_tokens", fmt.Sprintf("%d", usage.OutputTokens)},
+	}
+
+	for _, e := range entries {
+		path := filepath.Join(infoDir, prefix+e.key)
+		content := fmt.Sprintf("%s: %s", e.key, e.value)
+		if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+			t.Logf("WARNING: could not write RWX_INFO %s: %v", e.key, err)
+		}
 	}
 }
 
