@@ -5,4 +5,4 @@ equivalents.
 
 Fetch the latest cheat sheet content:
 
-    curl -sL https://www.rwx.com/docs/rwx/migrating/cheat-sheet.md
+    curl -sL https://www.rwx.com/docs/rwx/migrating/gha-cheat-sheet.md
