@@ -98,8 +98,8 @@ func TestParseRWXConfig(t *testing.T) {
 	}
 
 	// Verify env parsing.
-	if test.Env["DATABASE_URL"] != "postgres://localhost:5432/testdb" {
-		t.Errorf("unexpected DATABASE_URL: %s", test.Env["DATABASE_URL"])
+	if dbURL, ok := test.EnvString("DATABASE_URL"); !ok || dbURL != "postgres://localhost:5432/testdb" {
+		t.Errorf("unexpected DATABASE_URL: %s", dbURL)
 	}
 
 	// Verify background-processes parsing.
@@ -114,8 +114,9 @@ func TestParseRWXConfig(t *testing.T) {
 	}
 
 	// Verify multiline run parsing.
-	if !strings.Contains(test.Run, "go test") || !strings.Contains(test.Run, "go vet") {
-		t.Errorf("expected test run to contain 'go test' and 'go vet', got: %s", test.Run)
+	run := test.RunString()
+	if !strings.Contains(run, "go test") || !strings.Contains(run, "go vet") {
+		t.Errorf("expected test run to contain 'go test' and 'go vet', got: %s", run)
 	}
 }
 

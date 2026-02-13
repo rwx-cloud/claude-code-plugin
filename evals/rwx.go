@@ -15,18 +15,45 @@ type RWXConfig struct {
 }
 
 // RWXTask represents a single task in an RWX config.
+// Fields use flexible types where LLM-generated output may produce maps instead
+// of scalars. The real schema is enforced by rwx lint; this struct is for
+// eval assertions only.
 type RWXTask struct {
-	Key                 string            `yaml:"key"`
-	Call                string            `yaml:"call,omitempty"`
-	Run                 string            `yaml:"run,omitempty"`
-	Use                 FlexStrings       `yaml:"use,omitempty"`
-	With                map[string]any    `yaml:"with,omitempty"`
-	Env                 map[string]string `yaml:"env,omitempty"`
-	If                  string            `yaml:"if,omitempty"`
-	Filter              FlexStrings       `yaml:"filter,omitempty"`
-	Parallel            any               `yaml:"parallel,omitempty"`
-	BackgroundProcesses []BGProcess       `yaml:"background-processes,omitempty"`
-	Outputs             any               `yaml:"outputs,omitempty"`
+	Key                 string         `yaml:"key"`
+	Call                string         `yaml:"call,omitempty"`
+	Run                 any            `yaml:"run,omitempty"`
+	Use                 FlexStrings    `yaml:"use,omitempty"`
+	With                map[string]any `yaml:"with,omitempty"`
+	Env                 map[string]any `yaml:"env,omitempty"`
+	If                  string         `yaml:"if,omitempty"`
+	Filter              FlexStrings    `yaml:"filter,omitempty"`
+	Parallel            any            `yaml:"parallel,omitempty"`
+	BackgroundProcesses []BGProcess    `yaml:"background-processes,omitempty"`
+	Outputs             any            `yaml:"outputs,omitempty"`
+}
+
+// RunString returns the run field as a string. If Claude generated a map
+// instead of a string, it returns the fmt.Sprint representation.
+func (t *RWXTask) RunString() string {
+	if s, ok := t.Run.(string); ok {
+		return s
+	}
+	if t.Run == nil {
+		return ""
+	}
+	return fmt.Sprintf("%v", t.Run)
+}
+
+// EnvString returns the value of an env var as a string.
+func (t *RWXTask) EnvString(key string) (string, bool) {
+	v, ok := t.Env[key]
+	if !ok {
+		return "", false
+	}
+	if s, ok := v.(string); ok {
+		return s, true
+	}
+	return fmt.Sprintf("%v", v), true
 }
 
 // FlexStrings handles YAML fields that can be either a single string or a list of strings.
@@ -49,8 +76,19 @@ func (f *FlexStrings) UnmarshalYAML(unmarshal func(any) error) error {
 // BGProcess represents a background process (service) in an RWX task.
 type BGProcess struct {
 	Key        string `yaml:"key"`
-	Run        string `yaml:"run,omitempty"`
-	ReadyCheck string `yaml:"ready-check,omitempty"`
+	Run        any    `yaml:"run,omitempty"`
+	ReadyCheck any    `yaml:"ready-check,omitempty"`
+}
+
+// RunString returns the run field as a string.
+func (bp *BGProcess) RunString() string {
+	if s, ok := bp.Run.(string); ok {
+		return s
+	}
+	if bp.Run == nil {
+		return ""
+	}
+	return fmt.Sprintf("%v", bp.Run)
 }
 
 // ParseRWXConfig parses an RWX config from raw YAML bytes.
@@ -122,7 +160,7 @@ func (c *RWXConfig) HasTaskWithCall(callPrefix string) bool {
 func (c *RWXConfig) TasksWithRun(substr string) []RWXTask {
 	var matches []RWXTask
 	for _, t := range c.Tasks {
-		if strings.Contains(t.Run, substr) {
+		if strings.Contains(t.RunString(), substr) {
 			matches = append(matches, t)
 		}
 	}
@@ -134,7 +172,7 @@ func (c *RWXConfig) TasksWithRun(substr string) []RWXTask {
 func (c *RWXConfig) HasBackgroundProcess(substr string) bool {
 	for _, t := range c.Tasks {
 		for _, bp := range t.BackgroundProcesses {
-			if strings.Contains(bp.Key, substr) || strings.Contains(bp.Run, substr) {
+			if strings.Contains(bp.Key, substr) || strings.Contains(bp.RunString(), substr) {
 				return true
 			}
 		}

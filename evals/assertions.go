@@ -84,8 +84,8 @@ func HasRunContaining(substr string) ConfigAssertion {
 			if len(cfg.TasksWithRun(substr)) == 0 {
 				var runs []string
 				for _, task := range cfg.Tasks {
-					if task.Run != "" {
-						runs = append(runs, task.Key+": "+firstLine(task.Run))
+					if r := task.RunString(); r != "" {
+						runs = append(runs, task.Key+": "+firstLine(r))
 					}
 				}
 				t.Errorf("expected a task with run containing %q, got: %v", substr, runs)
@@ -137,7 +137,7 @@ func HasEnvVar(envKey string) ConfigAssertion {
 				if _, ok := task.Env[envKey]; ok {
 					return
 				}
-				if strings.Contains(task.Run, envKey+"=") {
+				if strings.Contains(task.RunString(), envKey+"=") {
 					return
 				}
 			}
@@ -156,11 +156,11 @@ func HasSecretRef(secretName string) ConfigAssertion {
 			t.Helper()
 			needle := "secrets." + secretName
 			for _, task := range cfg.Tasks {
-				if strings.Contains(task.Run, needle) {
+				if strings.Contains(task.RunString(), needle) {
 					return
 				}
 				for _, v := range task.Env {
-					if strings.Contains(v, needle) {
+					if s, ok := v.(string); ok && strings.Contains(s, needle) {
 						return
 					}
 				}
