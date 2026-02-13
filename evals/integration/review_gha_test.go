@@ -41,7 +41,7 @@ func TestReviewGHASimpleMigration(t *testing.T) {
 	workDir := setupGHAReviewWorkDir(t, "simple-ci.yml", "simple-ci-rwx.yml")
 	ctx := evalContext(t)
 
-	result, err := evals.RunClaude(ctx, "Use /review-gha-migration .rwx/simple-ci-rwx.yml to review the RWX config that was migrated from GitHub Actions", workDir)
+	result, err := evals.RunClaude(ctx, "/rwx:review-gha-migration .rwx/simple-ci-rwx.yml", workDir)
 	if err != nil {
 		t.Fatalf("RunClaude failed: %v", err)
 	}

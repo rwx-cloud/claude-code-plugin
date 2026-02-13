@@ -19,7 +19,7 @@ func runGHAMigrationEval(t *testing.T, fixtureName string, invariants []evals.Co
 	ctx := evalContext(t)
 
 	prompt := fmt.Sprintf(
-		"Migrate the GitHub Actions workflow at .github/workflows/%s to RWX",
+		"/rwx:migrate-from-gha .github/workflows/%s",
 		fixtureName,
 	)
 
