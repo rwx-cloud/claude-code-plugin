@@ -20,7 +20,7 @@ base:
 
 tasks:
   - key: code
-    call: git/clone 2.0.2
+    call: git/clone 2.0.3
     with:
       repository: https://github.com/rwx-cloud/skills.git
       ref: ${{ init.commit-sha }}
@@ -89,5 +89,8 @@ tasks:
         outputs:
           test-results:
             - path: evals/tmp/go-test-TEST_NAME.json
+          artifacts:
+            - key: claude-output
+              path: evals/tmp/claude-output-TEST_NAME.json
       EOF
       done

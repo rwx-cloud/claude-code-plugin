@@ -120,6 +120,21 @@ func assertOutputMentions(t *testing.T, result *evals.ExecutionResult, substr st
 	}
 }
 
+// saveClaudeOutput writes the raw Claude JSON output to tmp/ for CI artifact collection.
+func saveClaudeOutput(t *testing.T, result *evals.ExecutionResult) {
+	t.Helper()
+
+	dir := filepath.Join("..", "tmp")
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		t.Logf("WARNING: could not create output dir %s: %v", dir, err)
+		return
+	}
+	path := filepath.Join(dir, "claude-output-"+t.Name()+".json")
+	if err := os.WriteFile(path, result.RawOutput, 0o644); err != nil {
+		t.Logf("WARNING: could not save Claude output to %s: %v", path, err)
+	}
+}
+
 // evalContext returns a context with a 15-minute timeout.
 func evalContext(t *testing.T) context.Context {
 	t.Helper()

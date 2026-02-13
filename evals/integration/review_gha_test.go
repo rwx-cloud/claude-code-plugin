@@ -45,6 +45,7 @@ func TestReviewGHASimpleMigration(t *testing.T) {
 	if err != nil {
 		t.Fatalf("RunClaude failed: %v", err)
 	}
+	saveClaudeOutput(t, result)
 
 	assertSkillUsed(t, result, "rwx:review-gha-migration")
 	assertToolUsed(t, result, "Bash")

@@ -1,7 +1,9 @@
 {
   "input_tokens": 152,
-  "output_tokens": 6117,
-  "execution_time_ms": 148962,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "output_tokens": 13334,
+  "execution_time_ms": 309715,
   "tools_used": [
     "Read",
     "Skill",

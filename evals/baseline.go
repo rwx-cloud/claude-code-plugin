@@ -12,11 +12,13 @@ import (
 
 // Baseline holds a performance snapshot for an eval test.
 type Baseline struct {
-	InputTokens     int      `json:"input_tokens"`
-	OutputTokens    int      `json:"output_tokens"`
-	ExecutionTimeMS int      `json:"execution_time_ms"`
-	ToolsUsed       []string `json:"tools_used"`
-	SkillsUsed      []string `json:"skills_used"`
+	InputTokens              int      `json:"input_tokens"`
+	CacheCreationInputTokens int      `json:"cache_creation_input_tokens"`
+	CacheReadInputTokens     int      `json:"cache_read_input_tokens"`
+	OutputTokens             int      `json:"output_tokens"`
+	ExecutionTimeMS          int      `json:"execution_time_ms"`
+	ToolsUsed                []string `json:"tools_used"`
+	SkillsUsed               []string `json:"skills_used"`
 }
 
 func baselinesDir() string {
@@ -89,6 +91,7 @@ func AssertNoRegression(t *testing.T, result *ExecutionResult) {
 	}
 
 	checkThreshold(t, "input_tokens", prev.InputTokens, current.InputTokens, 0.20)
+	checkThreshold(t, "cache_read_input_tokens", prev.CacheReadInputTokens, current.CacheReadInputTokens, 0.20)
 	checkThreshold(t, "output_tokens", prev.OutputTokens, current.OutputTokens, 0.30)
 	checkThreshold(t, "execution_time_ms", prev.ExecutionTimeMS, current.ExecutionTimeMS, 0.50)
 }

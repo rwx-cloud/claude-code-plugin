@@ -1,5 +1,7 @@
 {
   "input_tokens": 143,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
   "output_tokens": 13286,
   "execution_time_ms": 281783,
   "tools_used": [

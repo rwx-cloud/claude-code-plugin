@@ -27,6 +27,7 @@ func runGHAMigrationEval(t *testing.T, fixtureName string, invariants []evals.Co
 	if err != nil {
 		t.Fatalf("RunClaude failed: %v", err)
 	}
+	saveClaudeOutput(t, result)
 
 	assertSkillUsed(t, result, "rwx:migrate-from-gha")
 	assertRWXConfigExists(t, workDir)

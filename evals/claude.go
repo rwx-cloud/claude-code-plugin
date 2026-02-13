@@ -45,8 +45,10 @@ type SkillInput struct {
 
 // TokenUsage tracks token counts from a result event.
 type TokenUsage struct {
-	InputTokens  int `json:"input_tokens"`
-	OutputTokens int `json:"output_tokens"`
+	InputTokens                int `json:"input_tokens"`
+	CacheCreationInputTokens   int `json:"cache_creation_input_tokens"`
+	CacheReadInputTokens       int `json:"cache_read_input_tokens"`
+	OutputTokens               int `json:"output_tokens"`
 }
 
 // ModelTokenUsage tracks per-model token usage.
@@ -54,7 +56,8 @@ type ModelTokenUsage map[string]TokenUsage
 
 // ExecutionResult holds the parsed output from a Claude headless run.
 type ExecutionResult struct {
-	Events []ClaudeEvent
+	Events    []ClaudeEvent
+	RawOutput []byte
 }
 
 // ResultEvent returns the final "result" event, or nil if not found.
@@ -141,6 +144,8 @@ func (r *ExecutionResult) Summary() (Baseline, error) {
 	b.ExecutionTimeMS = int(evt.DurationMS)
 	if evt.Usage != nil {
 		b.InputTokens = evt.Usage.InputTokens
+		b.CacheCreationInputTokens = evt.Usage.CacheCreationInputTokens
+		b.CacheReadInputTokens = evt.Usage.CacheReadInputTokens
 		b.OutputTokens = evt.Usage.OutputTokens
 	}
 	return b, nil
@@ -200,10 +205,12 @@ func RunClaude(ctx context.Context, prompt string, workDir string) (*ExecutionRe
 		return nil, fmt.Errorf("claude exited with error: %w\nstderr: %s\nstdout: %s", err, stderr.String(), stdout.String())
 	}
 
+	raw := bytes.Clone(stdout.Bytes())
+
 	var events []ClaudeEvent
-	if err := json.Unmarshal(stdout.Bytes(), &events); err != nil {
+	if err := json.Unmarshal(raw, &events); err != nil {
 		return nil, fmt.Errorf("parsing claude output: %w\nraw output: %s", err, stdout.String())
 	}
 
-	return &ExecutionResult{Events: events}, nil
+	return &ExecutionResult{Events: events, RawOutput: raw}, nil
 }
