@@ -7,11 +7,6 @@ description:
 argument-hint: [path/to/.github/workflows/ci.yml]
 ---
 
-## Quick Reference
-
-Read the cheat sheet before starting:
-[GHA Cheat Sheet](references/gha-cheat-sheet.md)
-
 ## Migration Procedure
 
 You are migrating a GitHub Actions workflow to RWX. Follow these steps exactly.
@@ -82,6 +77,8 @@ Omit any sections that have no entries.
 Fetch the full reference documentation now. Read these reference files and then
 fetch their contents:
 
+- [GHA Cheat Sheet](references/gha-cheat-sheet.md) — action-to-package mapping
+  and DAG pattern (read this first)
 - [RWX Reference](references/rwx-reference.md)
 - [GHA-to-RWX Mapping](references/gha-reference.md)
 
