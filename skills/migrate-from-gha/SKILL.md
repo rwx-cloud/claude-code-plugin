@@ -39,6 +39,37 @@ Tell the user what you found: how many jobs, the dependency graph between them,
 which triggers are configured, which composite actions you inlined, and which
 cross-repo references will need TODO comments. Keep it brief.
 
+Then write a migration inventory to `.rwx/.migration-inventory.md`. This file
+is a structured checklist that will be used during the review step to verify
+nothing was dropped. Keep it compact — names and keys only, not full details:
+
+```markdown
+## Jobs
+- lint (needs: [])
+- test (needs: [])
+- build (needs: [lint, test])
+- deploy (needs: [build], if: github.ref == 'refs/heads/main')
+
+## Secrets
+- DEPLOY_TOKEN
+
+## Environment Variables
+- DATABASE_URL (job: test)
+
+## Services
+- postgres (job: test)
+
+## Matrix Strategies
+- go-version: [1.22, 1.26] (job: test)
+
+## Notable Steps
+- golangci-lint-action (job: lint)
+- upload-artifact coverage.out (job: test)
+- download-artifact app-binary (job: deploy)
+```
+
+Omit any sections that have no entries.
+
 ### Step 2: Write the optimized RWX config
 
 Fetch the full reference documentation now. Read these reference files and then
@@ -75,7 +106,12 @@ You can also initiate test runs locally without pushing the code — see
 
 Tell the user: "Now reviewing the migration to check for gaps."
 
-Perform the review inline by reading and following the review procedure from
+Re-read `.rwx/.migration-inventory.md` (written in Step 1) and the generated
+RWX config. Use the inventory as your checklist — verify every item in it is
+accounted for in the config. This is more reliable than working from memory of
+the source workflow.
+
+Then follow the review procedure from
 [review-gha-migration/SKILL.md](../review-gha-migration/SKILL.md). You already
 have the reference docs from Step 2 — do not re-fetch them.
 
