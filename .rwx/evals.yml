@@ -83,6 +83,7 @@ tasks:
         use: [code, go, mod-download, gotestsum, rwx-cli, claude-cli]
         env:
           ANTHROPIC_API_KEY: \${{ vaults.skills.secrets.anthropic-api-key }}
+          EVALS_MAX_BUDGET_USD: \${{ vaults.skills.vars.max-budget-usd }}
         run: |
           cd evals
           mkdir -p tmp

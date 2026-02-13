@@ -193,12 +193,21 @@ func isDir(path string) bool {
 	return err == nil && info.IsDir()
 }
 
+// DefaultMaxBudgetUSD is the default spend cap per Claude invocation.
+// Override with the EVALS_MAX_BUDGET_USD environment variable.
+const DefaultMaxBudgetUSD = "5.00"
+
 // RunClaude runs Claude headlessly with the given prompt and working directory.
 // It returns the parsed execution result.
 func RunClaude(ctx context.Context, prompt string, workDir string) (*ExecutionResult, error) {
 	root, err := repoRoot()
 	if err != nil {
 		return nil, fmt.Errorf("finding repo root: %w", err)
+	}
+
+	maxBudget := DefaultMaxBudgetUSD
+	if v := os.Getenv("EVALS_MAX_BUDGET_USD"); v != "" {
+		maxBudget = v
 	}
 
 	args := []string{
@@ -208,6 +217,7 @@ func RunClaude(ctx context.Context, prompt string, workDir string) (*ExecutionRe
 		"--verbose",
 		"--model", "sonnet",
 		"--plugin-dir", root,
+		"--max-budget-usd", maxBudget,
 	}
 
 	// Only skip permission checks in CI or when explicitly opted in.
