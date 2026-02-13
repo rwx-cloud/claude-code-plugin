@@ -16,10 +16,10 @@ var update = flag.Bool("update", false, "update baseline snapshots")
 
 // ClaudeEvent is a top-level event from Claude's --output-format json output.
 type ClaudeEvent struct {
-	Type       string          `json:"type"`
-	Message    ClaudeMessage   `json:"message"`
-	DurationMS float64         `json:"duration_ms"`
-	Usage      *TokenUsage     `json:"usage,omitempty"`
+	Type       string           `json:"type"`
+	Message    ClaudeMessage    `json:"message"`
+	DurationMS float64          `json:"duration_ms"`
+	Usage      *TokenUsage      `json:"usage,omitempty"`
 	ModelUsage *ModelTokenUsage `json:"model_usage,omitempty"`
 }
 
@@ -45,10 +45,10 @@ type SkillInput struct {
 
 // TokenUsage tracks token counts from a result event.
 type TokenUsage struct {
-	InputTokens                int `json:"input_tokens"`
-	CacheCreationInputTokens   int `json:"cache_creation_input_tokens"`
-	CacheReadInputTokens       int `json:"cache_read_input_tokens"`
-	OutputTokens               int `json:"output_tokens"`
+	InputTokens              int `json:"input_tokens"`
+	CacheCreationInputTokens int `json:"cache_creation_input_tokens"`
+	CacheReadInputTokens     int `json:"cache_read_input_tokens"`
+	OutputTokens             int `json:"output_tokens"`
 }
 
 // ModelTokenUsage tracks per-model token usage.
@@ -151,23 +151,46 @@ func (r *ExecutionResult) Summary() (Baseline, error) {
 	return b, nil
 }
 
-// repoRoot walks up from the current working directory to find the repository root
-// (identified by the presence of a .git directory).
+// repoRoot walks up from the current working directory to find the repository
+// root. It prefers stable workspace markers so task caching does not depend on
+// including .git metadata in RWX filters.
 func repoRoot() (string, error) {
+	if root := os.Getenv("SKILLS_REPO_ROOT"); root != "" {
+		if looksLikeRepoRoot(root) {
+			return root, nil
+		}
+		return "", fmt.Errorf("SKILLS_REPO_ROOT=%q does not look like the skills repository root", root)
+	}
+
 	dir, err := os.Getwd()
 	if err != nil {
 		return "", err
 	}
 	for {
-		if info, err := os.Stat(filepath.Join(dir, ".git")); err == nil && info.IsDir() {
+		if looksLikeRepoRoot(dir) {
 			return dir, nil
 		}
 		parent := filepath.Dir(dir)
 		if parent == dir {
-			return "", fmt.Errorf("could not find repository root (no .git directory found)")
+			return "", fmt.Errorf("could not find repository root (looked for workspace markers: skills/ and evals/)")
 		}
 		dir = parent
 	}
+}
+
+func looksLikeRepoRoot(dir string) bool {
+	// Primary detection: repository layout expected by these evals.
+	if isDir(filepath.Join(dir, "skills")) && isDir(filepath.Join(dir, "evals")) {
+		return true
+	}
+
+	// Fallback for nonstandard layouts where only .git is available.
+	return isDir(filepath.Join(dir, ".git"))
+}
+
+func isDir(path string) bool {
+	info, err := os.Stat(path)
+	return err == nil && info.IsDir()
 }
 
 // RunClaude runs Claude headlessly with the given prompt and working directory.

@@ -65,15 +65,16 @@ tasks:
       mkdir -p tmp
       gotestsum --jsonfile tmp/go-test-unit.json -- $(go list ./... | grep -v /integration | tr '\n' ' ')
       gotestsum --jsonfile tmp/go-test-integration.json -- -short ./integration/
+    filter: 
+      - evals/**
     outputs:
       test-results:
         - path: evals/tmp/go-test-unit.json
         - path: evals/tmp/go-test-integration.json
 
   - key: generate-evals
-    # Gate on unit-test so that expensive Claude-calling eval tasks don't run
-    # (and waste API credits) when the unit tests are already failing.
-    use: [code, fast-tests]
+    after: ${{ fast-tests.succeeded && prettier.succeeded }}
+    use: [code]
     run: |
       cd evals/integration
       grep -h '^func Test' *_test.go | sed 's/func \(Test[a-zA-Z0-9_]*\).*/\1/' | while read test; do
@@ -94,3 +95,6 @@ tasks:
               path: evals/tmp/claude-output-TEST_NAME.json
       EOF
       done
+    filter:
+      - evals/**
+      - skills/**
