@@ -1,9 +1,7 @@
+# Run bin/setup_claude_skill_ci.sh before kicking off this run, to leverage local
+# Claude Code credentials for parallel eval runs.
+
 on:
-  github:
-    pull_request:
-      init:
-        commit-sha: ${{ event.git.sha }}
-        branch: ${{ event.git.branch }}
   cli:
     init:
       commit-sha: ${{ event.git.sha }}
@@ -54,10 +52,6 @@ tasks:
     use: [go]
     run: go install gotest.tools/gotestsum@v1.13.0
 
-  - key: prettier
-    use: [code, nodejs]
-    run: npx --yes prettier --check "**/*.md"
-
   - key: fast-tests
     use: [code, go, mod-download, gotestsum]
     run: |
@@ -73,7 +67,7 @@ tasks:
         - path: evals/tmp/go-test-integration.json
 
   - key: generate-evals
-    after: ${{ fast-tests.succeeded && prettier.succeeded }}
+    after: ${{ fast-tests.succeeded }}
     use: [code]
     run: |
       cd evals/integration
@@ -82,7 +76,7 @@ tasks:
       - key: eval-TEST_NAME
         use: [code, go, mod-download, gotestsum, rwx-cli, claude-cli]
         env:
-          ANTHROPIC_API_KEY: \${{ vaults.skills.secrets.anthropic-api-key }}
+          CLAUDE_CODE_OAUTH_TOKEN: \${{ vaults.skills.secrets.local-claude-access-token }}
           EVALS_MAX_BUDGET_USD: \${{ vaults.skills.vars.max-budget-usd }}
         run: |
           cd evals

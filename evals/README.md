@@ -45,6 +45,24 @@ tools, while eval tests call Claude and run in parallel as dynamic tasks.
 
 ## Running tests
 
+### In CI
+
+Note, right now CI runs with `.rwx/evals.yml` require access to a vault in the
+RWX organization, so only RWX employees can run evals in CI.
+
+The CI pipeline is helpful for parallelizing evals, but it does require a
+short-lived OAuth token. Run `/bin/setup_claude_skill_ci.sh` to sync your Claude
+auth settings to the vault, then run `rwx run .rwx/evals.yml` to kick off evals
+in CI.
+
+Evals do not currently run automatically on pull request, and are intended to be
+one part of a larger manual effort to ensure confidence in changes.
+
+### Locally
+
+Any contributor can run evals locally, regardless of access to the RWX
+organization in CI.
+
 ```bash
 # Unit tests (parser + assertions, no external deps)
 go test -v $(go list ./... | grep -v /integration)
@@ -61,8 +79,6 @@ go test -v -run TestMigrateGHASimpleCI -timeout 600s ./integration/
 # Generate/update baselines
 go test -v -update -timeout 600s ./integration/
 ```
-
-Evals require `claude` and `rwx` CLIs on `$PATH`, and `ANTHROPIC_API_KEY` set.
 
 ## Semantic assertions
 

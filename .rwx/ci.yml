@@ -1,0 +1,33 @@
+on:
+  github:
+    pull_request:
+      init:
+        commit-sha: ${{ event.git.sha }}
+        branch: ${{ event.git.branch }}
+
+concurrency-pools:
+  - id: rwx-cloud/skills:${{ init.branch }}
+    capacity: 1
+    on-overflow: cancel-running
+
+base:
+  image: ubuntu:24.04
+  config: rwx/base 1.0.0
+
+tasks:
+  - key: code
+    call: git/clone 2.0.3
+    with:
+      repository: https://github.com/rwx-cloud/skills.git
+      ref: ${{ init.commit-sha }}
+      github-token: ${{ github.token }}
+      preserve-git-dir: true
+
+  - key: nodejs
+    call: nodejs/install 1.1.11
+    with:
+      node-version: "22.22.0"
+
+  - key: prettier
+    use: [code, nodejs]
+    run: npx --yes prettier --check "**/*.md"
