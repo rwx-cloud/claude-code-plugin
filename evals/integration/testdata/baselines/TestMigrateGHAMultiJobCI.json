@@ -1,0 +1,16 @@
+{
+  "input_tokens": 28,
+  "cache_creation_input_tokens": 19135,
+  "cache_read_input_tokens": 387318,
+  "output_tokens": 3835,
+  "execution_time_ms": 84562,
+  "tools_used": [
+    "Read",
+    "Bash",
+    "Write",
+    "Edit"
+  ],
+  "skills_used": [
+    "rwx:migrate-from-gha"
+  ]
+}

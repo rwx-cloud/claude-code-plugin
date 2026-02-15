@@ -1,0 +1,101 @@
+on:
+  github:
+    pull_request:
+      init:
+        commit-sha: ${{ event.git.sha }}
+        branch: ${{ event.git.branch }}
+  cli:
+    init:
+      commit-sha: ${{ event.git.sha }}
+      branch: ${{ event.git.branch }}
+
+concurrency-pools:
+  - id: rwx-cloud/skills:${{ init.branch }}
+    capacity: 1
+    on-overflow: cancel-running
+
+base:
+  image: ubuntu:24.04
+  config: rwx/base 1.0.0
+
+tasks:
+  - key: code
+    call: git/clone 2.0.3
+    with:
+      repository: https://github.com/rwx-cloud/skills.git
+      ref: ${{ init.commit-sha }}
+      github-token: ${{ github.token }}
+      preserve-git-dir: true
+
+  - key: go
+    call: golang/install 1.2.0
+    with:
+      go-version: "1.26"
+
+  - key: rwx-cli
+    call: rwx/install-cli 4.0.1
+
+  - key: nodejs
+    call: nodejs/install 1.1.11
+    with:
+      node-version: "22.22.0"
+
+  - key: claude-cli
+    use: [nodejs]
+    run: npm install -g @anthropic-ai/claude-code
+
+  - key: mod-download
+    call: golang/mod-download 1.0.0
+    use: [code, go]
+    with:
+      path: evals/
+
+  - key: gotestsum
+    use: [go]
+    run: go install gotest.tools/gotestsum@v1.13.0
+
+  - key: prettier
+    use: [code, nodejs]
+    run: npx --yes prettier --check "**/*.md"
+
+  - key: fast-tests
+    use: [code, go, mod-download, gotestsum]
+    run: |
+      cd evals
+      mkdir -p tmp
+      gotestsum --jsonfile tmp/go-test-unit.json -- $(go list ./... | grep -v /integration | tr '\n' ' ')
+      gotestsum --jsonfile tmp/go-test-integration.json -- -short ./integration/
+    filter: 
+      - evals/**
+    outputs:
+      test-results:
+        - path: evals/tmp/go-test-unit.json
+        - path: evals/tmp/go-test-integration.json
+
+  - key: generate-evals
+    after: ${{ fast-tests.succeeded && prettier.succeeded }}
+    use: [code]
+    run: |
+      cd evals/integration
+      grep -h '^func Test' *_test.go | sed 's/func \(Test[a-zA-Z0-9_]*\).*/\1/' | while read test; do
+        sed "s/TEST_NAME/$test/g" <<'EOF' >> $RWX_DYNAMIC_TASKS/evals.yml
+      - key: eval-TEST_NAME
+        use: [code, go, mod-download, gotestsum, rwx-cli, claude-cli]
+        env:
+          ANTHROPIC_API_KEY: \${{ vaults.skills.secrets.anthropic-api-key }}
+          EVALS_MAX_BUDGET_USD: \${{ vaults.skills.vars.max-budget-usd }}
+        run: |
+          cd evals
+          mkdir -p tmp
+          gotestsum --jsonfile tmp/go-test-TEST_NAME.json -- -run ^TEST_NAME$ -timeout 1200s ./integration/
+        outputs:
+          test-results:
+            - path: evals/tmp/go-test-TEST_NAME.json
+          artifacts:
+            - key: claude-output
+              path: evals/tmp/claude-output-TEST_NAME.json
+      EOF
+      done
+    filter:
+      - evals/**
+      - skills/**

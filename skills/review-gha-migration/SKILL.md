@@ -1,35 +1,41 @@
 ---
 name: review-gha-migration
-description: Review an RWX config generated from a GitHub Actions migration. Compares the source workflow against the generated config to catch semantic gaps, missing steps, and optimization opportunities.
+description:
+  Review an RWX config generated from a GitHub Actions migration. Compares the
+  source workflow against the generated config to catch semantic gaps, missing
+  steps, and optimization opportunities.
 argument-hint: [.rwx/ci.yml]
 ---
 
 ## Quick Reference
 
-Read the cheat sheet before starting: [GHA Cheat Sheet](references/gha-cheat-sheet.md)
+Read the cheat sheet before starting:
+[GHA Cheat Sheet](references/gha-cheat-sheet.md)
 
 ## Review Procedure
 
-You are reviewing an RWX config that was generated from a GitHub Actions workflow migration.
-Your job is to catch problems the implementer missed. Approach this as a skeptical reviewer,
-not as someone defending prior work.
+You are reviewing an RWX config that was generated from a GitHub Actions
+workflow migration. Your job is to catch problems the implementer missed.
+Approach this as a skeptical reviewer, not as someone defending prior work.
 
 ### Step 1: Identify the files
 
-The user provides the RWX config path as `$ARGUMENTS`. If no path is provided, list the files
-in `.rwx/` and ask the user which config to review.
+The user provides the RWX config path as `$ARGUMENTS`. If no path is provided,
+list the files in `.rwx/` and ask the user which config to review.
 
 Then locate the corresponding source GitHub Actions workflow. Look for clues:
+
 - Comments in the RWX config referencing the source file
-- Filename correspondence (e.g., `.rwx/ci.yml` likely came from `.github/workflows/ci.yml`)
+- Filename correspondence (e.g., `.rwx/ci.yml` likely came from
+  `.github/workflows/ci.yml`)
 - Ask the user if the source is ambiguous
 
 Read both files in full.
 
 ### Step 2: Inventory the source workflow
 
-Build a checklist from the GitHub Actions workflow. For each item, you will verify it was
-correctly translated. Extract:
+Build a checklist from the GitHub Actions workflow. For each item, you will
+verify it was correctly translated. Extract:
 
 - Every job and its `needs:` dependencies
 - Every step within each job (name + what it does)
@@ -47,15 +53,17 @@ correctly translated. Extract:
 
 ### Step 3: Verify behavioral equivalence
 
-Go through your checklist item by item and verify each one is accounted for in the RWX config.
-For each item, classify it as:
+Go through your checklist item by item and verify each one is accounted for in
+the RWX config. For each item, classify it as:
 
 - **Correct** — properly translated to the RWX equivalent
 - **Missing** — not present in the RWX config and no TODO comment explaining why
 - **Wrong** — translated but with a semantic difference that changes behavior
-- **Degraded** — works but lost important properties (e.g., a parallel job became sequential)
+- **Degraded** — works but lost important properties (e.g., a parallel job
+  became sequential)
 
 Pay special attention to:
+
 - Steps that were silently dropped during migration
 - `if:` conditionals that were lost or simplified incorrectly
 - Environment variables that were not carried over
@@ -66,45 +74,54 @@ Pay special attention to:
 
 ### Step 4: Verify RWX optimizations
 
-Fetch the full reference documentation now. Read these reference files and then fetch their
-contents:
+If you don't already have the reference documentation in context, fetch it now.
+Read these reference files and then fetch their contents:
+
 - [RWX Reference](references/rwx-reference.md)
 - [GHA-to-RWX Mapping](references/gha-reference.md)
 
-Using the reference documentation, check whether the config takes full advantage of
-RWX capabilities:
+Using the reference documentation, check whether the config takes full advantage
+of RWX capabilities:
 
-- **DAG structure**: Are tasks that can run in parallel actually parallel, or are there
-  unnecessary sequential dependencies?
-- **Content-based caching**: Are cache keys content-based (not hash-based) where possible?
-- **Package substitution**: Are there `run:` steps installing tools that have RWX package
-  equivalents?
-- **Task granularity**: Could large monolithic tasks be split into parallel subtasks?
-- **Trigger optimization**: Are triggers using path filters and branch filters effectively?
+- **DAG structure**: Are tasks that can run in parallel actually parallel, or
+  are there unnecessary sequential dependencies?
+- **Content-based caching**: Are cache keys content-based (not hash-based) where
+  possible?
+- **Package substitution**: Are there `run:` steps installing tools that have
+  RWX package equivalents?
+- **Task granularity**: Could large monolithic tasks be split into parallel
+  subtasks?
+- **Trigger optimization**: Are triggers using path filters and branch filters
+  effectively?
 
 ### Step 5: Validate structure
 
 Check the RWX config for structural issues:
+
 - Required fields are present
 - YAML is well-formed
 - Task ordering reflects the DAG (independent tasks first)
-- No orphaned `depends_on` references
+- No orphaned `use` references
 - Run `rwx lint .rwx/<name>.yml` and review the diagnostics
 
 ### Step 6: Produce the review
 
 Output a structured review with these sections:
 
-**Summary**: One-line verdict — is this migration correct and ready, or does it need changes?
+**Summary**: One-line verdict — is this migration correct and ready, or does it
+need changes?
 
 **Issues** (if any): A numbered list of problems found, each with:
-- Severity: `blocking` (must fix before using) or `suggestion` (improvement opportunity)
+
+- Severity: `blocking` (must fix before using) or `suggestion` (improvement
+  opportunity)
 - What's wrong
 - Where in the RWX config it occurs
 - What the fix should be
 
-**Checklist**: A markdown checklist showing each source workflow item and whether it was
-correctly translated:
+**Checklist**: A markdown checklist showing each source workflow item and
+whether it was correctly translated:
+
 ```
 - [x] Job: build — correctly translated as task `build`
 - [ ] Job: deploy — missing, no TODO comment
