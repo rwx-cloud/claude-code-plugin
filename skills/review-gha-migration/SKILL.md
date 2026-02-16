@@ -10,10 +10,10 @@ argument-hint: [.rwx/ci.yml]
 ## Quick Reference
 
 Fetch and read the cheat sheet before starting. Do NOT use WebFetch — it
-summarizes and drops critical details. Instead, use Bash to curl the doc and
-read stdout directly:
+summarizes and drops critical details. Instead, use Bash to run `rwx docs pull`
+and read stdout directly:
 
-    curl -sL https://www.rwx.com/docs/rwx/migrating/gha-cheat-sheet.md
+    rwx docs pull /docs/rwx/migrating/gha-cheat-sheet
 
 ## Review Procedure
 
@@ -79,13 +79,16 @@ Pay special attention to:
 
 If you don't already have the reference documentation in context, fetch it now.
 Do NOT use WebFetch — it summarizes and drops critical details. Instead, use
-Bash to curl each doc and read stdout directly. Run both in a single turn as
-parallel Bash calls:
+Bash to run `rwx docs pull` for each doc and read stdout directly. Run both in a
+single turn as parallel Bash calls:
 
-- `curl -sL https://www.rwx.com/docs/rwx/migrating/rwx-reference.md` — full RWX
-  config syntax
-- `curl -sL https://www.rwx.com/docs/rwx/migrating/gha-reference.md` —
-  GHA-to-RWX concept mapping
+- `rwx docs pull /docs/rwx/migrating/rwx-reference` — full RWX config syntax
+- `rwx docs pull /docs/rwx/migrating/gha-reference` — GHA-to-RWX concept
+  mapping
+
+If you encounter a question not covered by these references, use
+`rwx docs search "<query>"` to find the relevant documentation page, then
+`rwx docs pull` the result.
 
 Using the reference documentation, check whether the config takes full advantage
 of RWX capabilities:

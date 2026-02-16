@@ -75,15 +75,19 @@ Omit any sections that have no entries.
 ### Step 2: Write the optimized RWX config
 
 Fetch the full reference documentation now. Do NOT use WebFetch — it summarizes
-and drops critical details. Instead, use Bash to curl each doc and read the
-stdout directly. Run all three in a single turn as parallel Bash calls:
+and drops critical details. Instead, use Bash to run `rwx docs pull` for each
+doc and read stdout directly. Run all three in a single turn as parallel Bash
+calls:
 
-- `curl -sL https://www.rwx.com/docs/rwx/migrating/gha-cheat-sheet.md` —
-  action-to-package mapping and DAG pattern (read this first)
-- `curl -sL https://www.rwx.com/docs/rwx/migrating/rwx-reference.md` — full RWX
-  config syntax
-- `curl -sL https://www.rwx.com/docs/rwx/migrating/gha-reference.md` —
-  GHA-to-RWX concept mapping
+- `rwx docs pull /docs/rwx/migrating/gha-cheat-sheet` — action-to-package
+  mapping and DAG pattern (read this first)
+- `rwx docs pull /docs/rwx/migrating/rwx-reference` — full RWX config syntax
+- `rwx docs pull /docs/rwx/migrating/gha-reference` — GHA-to-RWX concept
+  mapping
+
+If you encounter a question not covered by these references, use
+`rwx docs search "<query>"` to find the relevant documentation page, then
+`rwx docs pull` the result.
 
 This is the core of the migration. Do NOT produce a 1:1 mapping. Apply the
 optimization rules from the reference documentation — including DAG
