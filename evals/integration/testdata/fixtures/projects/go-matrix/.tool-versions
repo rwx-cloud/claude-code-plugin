@@ -1,0 +1,2 @@
+# Test against multiple Go versions: 1.22 and 1.26
+golang 1.26.0
