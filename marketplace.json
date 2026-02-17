@@ -13,6 +13,11 @@
       "name": "review-gha-migration",
       "path": "skills/review-gha-migration",
       "description": "Review an RWX config from a GitHub Actions migration"
+    },
+    {
+      "name": "rwx",
+      "path": "skills/rwx",
+      "description": "Generate or modify an RWX CI/CD config"
     }
   ]
 }
