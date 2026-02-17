@@ -6,6 +6,7 @@ on:
     init:
       commit-sha: ${{ event.git.sha }}
       branch: ${{ event.git.branch }}
+      update-baselines: "false"
 
 concurrency-pools:
   - id: rwx-cloud/skills:${{ init.branch }}
@@ -77,8 +78,12 @@ tasks:
     use: [code]
     run: |
       cd evals/integration
+      UPDATE_FLAG=""
+      if [ "${{ init.update-baselines }}" = "true" ]; then
+        UPDATE_FLAG="-update"
+      fi
       grep -h '^func Test' *_test.go | sed 's/func \(Test[a-zA-Z0-9_]*\).*/\1/' | while read test; do
-        sed "s/TEST_NAME/$test/g" <<'EOF' >> $RWX_DYNAMIC_TASKS/evals.yml
+        sed "s/TEST_NAME/$test/g; s/UPDATE_FLAG/$UPDATE_FLAG/g" <<'EOF' >> $RWX_DYNAMIC_TASKS/evals.yml
       - key: eval-TEST_NAME
         use: [code, go, mod-download, gotestsum, rwx-cli, claude-cli]
         env:
@@ -87,13 +92,15 @@ tasks:
         run: |
           cd evals
           mkdir -p tmp
-          gotestsum --jsonfile tmp/go-test-TEST_NAME.json -- -run ^TEST_NAME$ -timeout 1200s ./integration/
+          gotestsum --jsonfile tmp/go-test-TEST_NAME.json -- -run ^TEST_NAME$ -timeout 1200s ./integration/ UPDATE_FLAG
         outputs:
           test-results:
             - path: evals/tmp/go-test-TEST_NAME.json
           artifacts:
             - key: claude-output
               path: evals/tmp/claude-output-TEST_NAME.json
+            - key: baseline
+              path: evals/integration/testdata/baselines/TEST_NAME.json
       EOF
       done
     filter:

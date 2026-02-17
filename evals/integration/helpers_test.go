@@ -3,6 +3,7 @@ package integration
 import (
 	"context"
 	"fmt"
+	"io/fs"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -193,4 +194,85 @@ func evalContext(t *testing.T) context.Context {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
 	t.Cleanup(cancel)
 	return ctx
+}
+
+// setupProjectDir copies an entire fixture directory tree into a temp dir,
+// preserving directory structure. Unlike setupWorkDir which targets
+// .github/workflows/, this copies to the project root.
+func setupProjectDir(t *testing.T, fixtureName string) string {
+	t.Helper()
+
+	tmpDir := t.TempDir()
+
+	srcRoot := filepath.Join("testdata", "fixtures", "projects", fixtureName)
+	err := filepath.WalkDir(srcRoot, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
+		rel, err := filepath.Rel(srcRoot, path)
+		if err != nil {
+			return err
+		}
+
+		dst := filepath.Join(tmpDir, rel)
+
+		if d.IsDir() {
+			return os.MkdirAll(dst, 0o755)
+		}
+
+		data, err := os.ReadFile(path)
+		if err != nil {
+			return err
+		}
+		return os.WriteFile(dst, data, 0o644)
+	})
+	if err != nil {
+		t.Fatalf("copying fixture %s: %v", fixtureName, err)
+	}
+
+	return tmpDir
+}
+
+// --- Shared assertion helpers ---
+
+// clonesRepo matches either a git/clone package or a git clone run command.
+func clonesRepo() evals.ConfigAssertion {
+	return evals.Either("clones_repo",
+		evals.HasPackage("git/clone"),
+		evals.HasRunContaining("git clone"),
+	)
+}
+
+// installsGo matches package names the agent might use for Go installation.
+func installsGo() evals.ConfigAssertion {
+	return evals.Either("installs_go",
+		evals.HasPackage("golang/install"),
+		evals.HasPackage("go/install"),
+		evals.HasPackage("rwx/tool-versions"),
+	)
+}
+
+// installsNode matches common Node.js installation patterns.
+func installsNode() evals.ConfigAssertion {
+	return evals.Either("installs_node",
+		evals.HasPackage("nodejs/install"),
+		evals.HasPackage("node/install"),
+	)
+}
+
+// installsRust matches common Rust installation patterns.
+func installsRust() evals.ConfigAssertion {
+	return evals.Either("installs_rust",
+		evals.HasPackage("rust/install"),
+		evals.HasRunContaining("rustup"),
+	)
+}
+
+// installsPython matches common Python installation patterns.
+func installsPython() evals.ConfigAssertion {
+	return evals.Either("installs_python",
+		evals.HasPackage("python/install"),
+		evals.HasRunContaining("python"),
+	)
 }

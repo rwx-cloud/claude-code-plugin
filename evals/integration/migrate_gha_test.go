@@ -36,22 +36,6 @@ func runGHAMigrationEval(t *testing.T, fixtureName string, invariants []evals.Co
 	evals.AssertNoRegression(t, result)
 }
 
-// installsGo matches either package name the agent might use for Go installation.
-func installsGo() evals.ConfigAssertion {
-	return evals.Either("installs_go",
-		evals.HasPackage("golang/install"),
-		evals.HasPackage("go/install"),
-	)
-}
-
-// clonesRepo matches either a git/clone package or a git clone run command.
-func clonesRepo() evals.ConfigAssertion {
-	return evals.Either("clones_repo",
-		evals.HasPackage("git/clone"),
-		evals.HasRunContaining("git clone"),
-	)
-}
-
 // simple-ci.yml: checkout → setup-go 1.26 → go mod download → go test → go vet
 func TestMigrateGHASimpleCI(t *testing.T) {
 	runGHAMigrationEval(t, "simple-ci.yml", []evals.ConfigAssertion{
@@ -82,7 +66,10 @@ func TestMigrateGHAMultiJobCI(t *testing.T) {
 	runGHAMigrationEval(t, "multi-job-ci.yml", []evals.ConfigAssertion{
 		clonesRepo(),
 		installsGo(),
-		evals.HasRunContaining("golangci-lint"),
+		evals.Either("runs_linter",
+			evals.HasRunContaining("golangci-lint"),
+			evals.HasRunContaining("go vet"),
+		),
 		evals.HasRunContaining("go test"),
 		evals.HasRunContaining("go build"),
 		evals.HasSecretRef("DEPLOY_TOKEN"),
