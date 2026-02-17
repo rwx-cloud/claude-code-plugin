@@ -139,4 +139,4 @@ review:
 - Estimated parallelism improvement (e.g., "6 sequential steps → 3-level DAG")
 
 Let the user know they can re-run the review independently at any time with
-`/rwx:review-gha-migration`.
+`/review-gha-migration`.

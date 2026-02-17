@@ -10,8 +10,10 @@ Skills for working with [RWX](https://www.rwx.com).
 
 ### Claude Code
 
+In Claude Code, run:
+
 ```
-claude plugin install --from-repo https://github.com/rwx-cloud/skills
+/plugin marketplace add rwx-cloud/skills
 ```
 
 ### Universal (npx)
@@ -32,7 +34,7 @@ Copilot also reads `.github/copilot-instructions.md` for skill context.
 
 ## Skills
 
-### `/rwx:rwx`
+### `/rwx`
 
 Generates or modifies an RWX CI/CD config. Analyzes project structure, selects
 appropriate packages, and produces an optimized config with DAG parallelism,
@@ -40,7 +42,7 @@ content-based caching, and RWX packages. If an existing `.rwx/*.yml` config is
 present, modifies it in place.
 
 ```
-/rwx:rwx CI pipeline with tests and deploy
+/rwx CI pipeline with tests and deploy
 ```
 
 The skill will:
@@ -53,20 +55,20 @@ The skill will:
 
 ### Migration Skills
 
-#### `/rwx:migrate-from-gha`
+#### `/migrate-from-gha`
 
 Migrates a GitHub Actions workflow to RWX.
 
 ```
-/rwx:migrate-from-gha .github/workflows/ci.yml
+/migrate-from-gha .github/workflows/ci.yml
 ```
 
-#### `/rwx:review-gha-migration`
+#### `/review-gha-migration`
 
 Reviews a generated RWX config against the original GitHub Actions workflow.
 
 ```
-/rwx:review-gha-migration .rwx/ci.yml
+/review-gha-migration .rwx/ci.yml
 ```
 
 ## Architecture
