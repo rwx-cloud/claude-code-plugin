@@ -3,17 +3,17 @@
   "version": "0.1.0",
   "repository": "https://github.com/rwx-cloud/skills",
   "metadata": {
-    "description": "RWX CI/CD platform integration"
+    "description": "RWX platform integration"
   },
   "owner": {
-    "name": "RWX Support",
+    "name": "RWX",
     "email": "support@rwx.com"
   },
   "plugins": [
     {
       "name": "rwx",
       "source": "./skills/rwx",
-      "description": "Generate or modify an RWX CI/CD config"
+      "description": "Generate or modify an RWX config"
     },
     {
       "name": "migrate-from-gha",
