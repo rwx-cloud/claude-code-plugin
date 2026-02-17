@@ -1,0 +1,9 @@
+{
+  "name": "review-gha-migration",
+  "description": "Review an RWX config from a GitHub Actions migration",
+  "author": {
+    "name": "RWX Support",
+    "email": "support@rwx.com"
+  },
+  "version": "0.1.0"
+}

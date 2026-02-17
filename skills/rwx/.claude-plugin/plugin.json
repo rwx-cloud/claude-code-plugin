@@ -1,0 +1,9 @@
+{
+  "name": "rwx",
+  "description": "Generate or modify an RWX CI/CD config",
+  "author": {
+    "name": "RWX Support",
+    "email": "support@rwx.com"
+  },
+  "version": "0.1.0"
+}

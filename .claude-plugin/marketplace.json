@@ -1,23 +1,31 @@
 {
   "name": "rwx",
-  "description": "RWX CI/CD platform integration",
   "version": "0.1.0",
   "repository": "https://github.com/rwx-cloud/skills",
-  "skills": [
+  "metadata": {
+    "description": "RWX CI/CD platform integration"
+  },
+  "owner": {
+    "name": "RWX Support",
+    "email": "support@rwx.com"
+  },
+  "plugins": [
+    {
+      "name": "rwx",
+      "source": "./skills/rwx",
+      "description": "Generate or modify an RWX CI/CD config"
+    },
     {
       "name": "migrate-from-gha",
-      "path": "skills/migrate-from-gha",
+      "source": "./skills/migrate-from-gha",
       "description": "Migrate a GitHub Actions workflow to RWX"
     },
     {
       "name": "review-gha-migration",
-      "path": "skills/review-gha-migration",
+      "source": "./skills/review-gha-migration",
       "description": "Review an RWX config from a GitHub Actions migration"
-    },
-    {
-      "name": "rwx",
-      "path": "skills/rwx",
-      "description": "Generate or modify an RWX CI/CD config"
     }
-  ]
+  ],
+  "mcpServers": ".mcp.json",
+  "lspServers": ".lsp.json"
 }
