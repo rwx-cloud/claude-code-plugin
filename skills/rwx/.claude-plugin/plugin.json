@@ -1,0 +1,9 @@
+{
+  "name": "rwx",
+  "description": "Generate or modify an RWX config",
+  "author": {
+    "name": "RWX",
+    "email": "support@rwx.com"
+  },
+  "version": "0.1.0"
+}
