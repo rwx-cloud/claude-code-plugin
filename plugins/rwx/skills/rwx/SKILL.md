@@ -1,13 +1,17 @@
 ---
 name: rwx
-description: Can be used when creating or modifying an RWX CI/CD config.
+description:
+  Can be used when understanding, creating or modifying an RWX CI/CD config.
 argument-hint: [optional description, e.g. "CI pipeline with tests and deploy"]
-allowed-tools: Bash(rwx *)
+allowed-tools:
+  Bash(rwx lint *), Bash(rwx docs *), Bash(rwx logs *), Bash(rwx artifacts *),
+  Bash(rwx results *), Bash(rwx * --help)
 ---
 
 ## Generate or Modify RWX Config
 
-You are creating or modifying an RWX CI/CD config for this project.
+You have been tasked with creating, modifying, or understanding/explaining an
+RWX CI/CD config for this project.
 
 Fetch the reference docs index with:
 
