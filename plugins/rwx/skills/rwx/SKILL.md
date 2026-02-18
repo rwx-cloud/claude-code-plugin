@@ -2,6 +2,7 @@
 name: rwx
 description: Can be used when creating or modifying an RWX CI/CD config.
 argument-hint: [optional description, e.g. "CI pipeline with tests and deploy"]
+allowed-tools: Bash(rwx *)
 ---
 
 ## Generate or Modify RWX Config

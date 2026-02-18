@@ -12,17 +12,17 @@
   "plugins": [
     {
       "name": "rwx",
-      "source": "./skills/rwx",
+      "source": "./plugins/rwx",
       "description": "Generate or modify an RWX config"
     },
     {
       "name": "migrate-from-gha",
-      "source": "./skills/migrate-from-gha",
+      "source": "./plugins/migrate-from-gha",
       "description": "Migrate a GitHub Actions workflow to RWX"
     },
     {
       "name": "review-gha-migration",
-      "source": "./skills/review-gha-migration",
+      "source": "./plugins/review-gha-migration",
       "description": "Review an RWX config from a GitHub Actions migration"
     }
   ],

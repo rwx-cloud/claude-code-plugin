@@ -16,21 +16,17 @@ In Claude Code, run:
 /plugin marketplace add rwx-cloud/skills
 ```
 
+Then, install the RWX skill:
+
+```
+/plugin install rwx
+```
+
 ### Universal (npx)
 
 ```
 npx skills add rwx-cloud/skills
 ```
-
-### Codex
-
-Codex automatically reads `AGENTS.md` from the repo root and discovers the MCP
-server from `.codex/config.toml`. Clone the repo and ensure `rwx` is on PATH.
-
-### Cursor / GitHub Copilot
-
-The `.vscode/mcp.json` config is picked up automatically when the repo is open.
-Copilot also reads `.github/copilot-instructions.md` for skill context.
 
 ## Skills
 
