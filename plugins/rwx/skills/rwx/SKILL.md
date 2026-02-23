@@ -5,7 +5,7 @@ description:
 argument-hint: [optional description, e.g. "CI pipeline with tests and deploy"]
 allowed-tools:
   Bash(rwx lint *), Bash(rwx docs *), Bash(rwx logs *), Bash(rwx artifacts *),
-  Bash(rwx results *), Bash(rwx * --help)
+  Bash(rwx results *), Bash(rwx whoami), Bash(rwx * --help)
 ---
 
 ## Generate or Modify RWX Config
@@ -13,7 +13,10 @@ allowed-tools:
 You have been tasked with creating, modifying, or understanding/explaining an
 RWX CI/CD config for this project.
 
-Fetch the reference docs index with:
+Ensure the user is signed in and on the latest version of the RWX CLI before
+getting started: rwx whoami
+
+Then, fetch the reference docs index with:
 
     rwx docs pull /docs/rwx/migrating/rwx-reference
 
