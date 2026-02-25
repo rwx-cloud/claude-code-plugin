@@ -1,7 +1,8 @@
 ---
 name: rwx
 description:
-  Can be used when understanding, creating or modifying an RWX CI/CD config.
+  Can be used when understanding, creating or modifying an RWX CI/CD config or
+  any other file in a .rwx directory.
 argument-hint: [optional description, e.g. "CI pipeline with tests and deploy"]
 allowed-tools:
   Bash(rwx lint *), Bash(rwx docs *), Bash(rwx logs *), Bash(rwx artifacts *),
